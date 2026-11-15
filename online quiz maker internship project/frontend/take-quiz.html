@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Take Quiz</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="main-container">
+
+<div class="card-box">
+
+<h2 id="quizTitle"></h2>
+
+<h3 id="timer">
+Time Left: 60s
+</h3>
+
+<div class="progress">
+
+<div class="progress-bar" id="progressBar"></div>
+
+</div>
+
+<div id="quizContainer"></div>
+
+<button onclick="submitQuiz()">
+
+Submit Quiz
+
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+let currentQuiz;
+
+let score = 0;
+
+let timeLeft = 60;
+
+const timer = setInterval(()=>{
+
+    timeLeft--;
+
+    document.getElementById("timer").innerText =
+        `Time Left: ${timeLeft}s`;
+
+    if(timeLeft <= 0){
+
+        clearInterval(timer);
+
+        submitQuiz();
+    }
+
+},1000);
+
+async function loadQuiz(){
+
+    const quizId = localStorage.getItem("quizId");
+
+    const response = await fetch(
+        `http://localhost:5000/api/quizzes/${quizId}`
+    );
+
+    const quiz = await response.json();
+
+    currentQuiz = quiz;
+
+    document.getElementById("quizTitle").innerText =
+        quiz.title;
+
+    let output = "";
+
+    quiz.questions.forEach((q,index)=>{
+
+        output += `
+            <div class="question-box">
+
+                <h3>${index+1}. ${q.question}</h3>
+
+                ${q.options.map(option => `
+
+                    <label>
+
+                        <input
+                            type="radio"
+                            name="question${index}"
+                            value="${option}"
+
+                            onchange="
+                                updateProgress(
+                                    ${index+1},
+                                    ${quiz.questions.length}
+                                )
+                            "
+                        >
+
+                        ${option}
+
+                    </label>
+
+                `).join("")}
+
+            </div>
+        `;
+    });
+
+    document.getElementById("quizContainer").innerHTML =
+        output;
+}
+
+function updateProgress(current,total){
+
+    const percent = (current/total)*100;
+
+    document.getElementById(
+        "progressBar"
+    ).style.width = percent + "%";
+}
+
+function submitQuiz(){
+
+    score = 0;
+
+    let correctAnswers = [];
+
+    currentQuiz.questions.forEach((q,index)=>{
+
+        const selected = document.querySelector(
+            `input[name="question${index}"]:checked`
+        );
+
+        if(selected){
+
+            if(selected.value === q.correctAnswer){
+
+                score++;
+            }
+
+            correctAnswers.push({
+
+                question:q.question,
+
+                correct:q.correctAnswer
+            });
+        }
+    });
+
+    localStorage.setItem("score",score);
+
+    localStorage.setItem(
+        "total",
+        currentQuiz.questions.length
+    );
+
+    localStorage.setItem(
+        "answers",
+        JSON.stringify(correctAnswers)
+    );
+
+    window.location.href = "result.html";
+}
+
+loadQuiz();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Create Quiz</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="main-container">
+
+<div class="card-box">
+
+<h2>Create Quiz</h2>
+
+<input type="text" id="title" placeholder="Quiz Title">
+
+<input type="text" id="question" placeholder="Question">
+
+<input type="text" id="option1" placeholder="Option 1">
+
+<input type="text" id="option2" placeholder="Option 2">
+
+<input type="text" id="option3" placeholder="Option 3">
+
+<input type="text" id="option4" placeholder="Option 4">
+
+<input type="text" id="correct" placeholder="Correct Answer">
+
+<button onclick="createQuiz()">
+Create Quiz
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+async function createQuiz(){
+
+    const quiz = {
+
+        title:document.getElementById("title").value,
+
+        questions:[
+            {
+                question:document.getElementById("question").value,
+
+                options:[
+                    document.getElementById("option1").value,
+                    document.getElementById("option2").value,
+                    document.getElementById("option3").value,
+                    document.getElementById("option4").value
+                ],
+
+                correctAnswer:document.getElementById("correct").value
+            }
+        ]
+    };
+
+    const response = await fetch(
+        "http://localhost:5000/api/quizzes/create",
+        {
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify(quiz)
+        }
+    );
+
+    const data = await response.json();
+
+    alert(data.message);
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Result</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="main-container">
+
+<div class="card-box">
+
+<h1>Quiz Result</h1>
+
+<h2 id="score"></h2>
+
+<div id="answers"></div>
+
+<a href="quizzes.html">
+
+<button>
+Back To Quizzes
+</button>
+
+</a>
+
+</div>
+
+</div>
+
+<script>
+
+const score = localStorage.getItem("score");
+
+const total = localStorage.getItem("total");
+
+document.getElementById(
+    "score"
+).innerText = `You scored ${score} / ${total}`;
+
+const answers = JSON.parse(
+    localStorage.getItem("answers")
+);
+
+let output = "<h3>Correct Answers:</h3>";
+
+answers.forEach((a,index)=>{
+
+    output += `
+        <div class="answer-box">
+
+            <p>
+
+                <strong>Q${index+1}:</strong>
+
+                ${a.question}
+
+            </p>
+
+            <p>
+
+                <strong>Correct Answer:</strong>
+
+                ${a.correct}
+
+            </p>
+
+        </div>
+    `;
+});
+
+document.getElementById("answers").innerHTML =
+    output;
+
+</script>
+
+</body>
+</html>
